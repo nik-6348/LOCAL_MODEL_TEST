@@ -1,6 +1,6 @@
-# Local AI Chat with GPT-OSS-20B
+# AI Chat with Qwen 2.5
 
-A Streamlit-based chat interface for running the OpenAI GPT-OSS-20B model locally on your machine.
+A Streamlit-based chat interface for running the Qwen 2.5 (0.5B) model - optimized for Streamlit Cloud deployment.
 
 ## Features
 
@@ -12,10 +12,10 @@ A Streamlit-based chat interface for running the OpenAI GPT-OSS-20B model locall
 
 ## Requirements
 
-- Python 3.8 or higher
-- At least 16GB RAM (32GB+ recommended for this large model)
-- GPU with 40GB+ VRAM recommended (model is ~240GB in size)
-- Sufficient disk space for model downloads
+- Python 3.10 or 3.11
+- 2-4GB RAM (works on Streamlit Community Cloud)
+- No GPU required (optimized for CPU)
+- ~1GB disk space for model downloads
 
 ## Installation
 
@@ -43,17 +43,18 @@ streamlit run app.py
 
 ## Model Information
 
-This app uses the `openai/gpt-oss-120b` model from Hugging Face:
-- Model size: ~120 billion parameters
-- Type: Causal language model
+This app uses the `Qwen/Qwen2.5-0.5B-Instruct` model from Hugging Face:
+- Model size: ~500 million parameters
+- Type: Instruction-tuned causal language model
 - Use case: General text generation and chat
+- Optimized for: Low-resource environments and cloud deployment
 
 ## Performance Tips
 
-- **GPU recommended**: This is a very large model. A GPU with sufficient VRAM will significantly improve performance
-- **CPU mode**: If running on CPU, expect slower response times
-- **Memory**: Close other applications to free up memory
-- **Reduce tokens**: Lower the "Max New Tokens" setting if experiencing memory issues
+- **Cloud-ready**: This model is optimized to run on Streamlit Community Cloud
+- **CPU efficient**: Runs smoothly on CPU without GPU acceleration
+- **Memory efficient**: Small model size means fast loading and minimal memory usage
+- **Reduce tokens**: Lower the "Max New Tokens" setting for faster responses
 
 ## Troubleshooting
 
@@ -72,14 +73,26 @@ This app uses the `openai/gpt-oss-120b` model from Hugging Face:
 - Reduce the max tokens setting
 - Consider using quantized versions of the model (requires additional setup)
 
-## Note
+## Deployment
 
-The GPT-OSS-120B model is extremely large and requires substantial computational resources. If you encounter performance issues, consider:
-- Using a smaller model (e.g., GPT-2, smaller LLaMA models)
-- Using model quantization (4-bit or 8-bit)
-- Running on cloud GPU instances
+This app is designed to work seamlessly on:
+- **Streamlit Community Cloud** (recommended)
+- **Local machines** with Python 3.10+
+- **Any cloud platform** with minimal resources
+
+### Deploy to Streamlit Cloud:
+1. Push your code to GitHub
+2. Visit [share.streamlit.io](https://share.streamlit.io)
+3. Deploy your repository
 
 ## License
 
-This project uses the transformers library and the OpenAI GPT-OSS-120B model. Please refer to their respective licenses for usage terms.
+This project uses the transformers library and the Qwen 2.5 model. Please refer to their respective licenses for usage terms.
+
+## Why Qwen 2.5?
+
+- **Compact**: Only 0.5B parameters, perfect for free cloud hosting
+- **Capable**: Instruction-tuned for chat and general tasks
+- **Fast**: Quick responses even on CPU
+- **Free**: Runs on Streamlit Community Cloud at no cost
 

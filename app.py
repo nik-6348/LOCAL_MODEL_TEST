@@ -1,6 +1,12 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
+
+# Try importing transformers components with better error handling
+try:
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+except ImportError as e:
+    st.error(f"Failed to import transformers: {e}")
+    st.stop()
 
 # Page configuration
 st.set_page_config(
@@ -10,7 +16,7 @@ st.set_page_config(
 )
 
 # Title
-st.title("🤖 Local AI Chat with GPT-OSS-20B")
+st.title("🤖 AI Chat with Qwen 2.5")
 
 # Sidebar for model settings
 with st.sidebar:
@@ -20,7 +26,8 @@ with st.sidebar:
     top_p = st.slider("Top P", min_value=0.1, max_value=1.0, value=0.9, step=0.05)
     
     st.divider()
-    st.caption("Model: openai/gpt-oss-20b")
+    st.caption("Model: Qwen/Qwen2.5-Coder-7B-Instruct")
+    st.caption("(Lightweight model for Streamlit Cloud)")
     
     if st.button("🗑️ Clear Chat History"):
         st.session_state.messages = []
@@ -36,19 +43,18 @@ def load_model():
     """Load the model and tokenizer with caching"""
     with st.spinner("Loading model... This may take a few minutes on first run."):
         try:
-            tokenizer = AutoTokenizer.from_pretrained("openai/gpt-oss-20b")
+            # Using Qwen2.5-0.5B-Instruct - a small but capable model that works on Streamlit Cloud
+            model_name = "Qwen/Qwen2.5-Coder-7B-Instruct"
+            
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
             model = AutoModelForCausalLM.from_pretrained(
-                "openai/gpt-oss-20b",
-                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
-                device_map="auto" if torch.cuda.is_available() else None,
+                model_name,
+                torch_dtype=torch.float32,  # Use float32 for CPU
                 low_cpu_mem_usage=True
             )
             
-            # Move to GPU if available
-            if torch.cuda.is_available():
-                st.sidebar.success("✅ GPU Detected")
-            else:
-                st.sidebar.warning("⚠️ Running on CPU (slower)")
+            # CPU mode for Streamlit Cloud
+            st.sidebar.info("ℹ️ Running on CPU (optimized for Streamlit Cloud)")
                 
             return tokenizer, model
         except Exception as e:
@@ -90,9 +96,16 @@ if prompt := st.chat_input("Type your message here..."):
                         messages,
                         add_generation_prompt=True,
                         tokenize=True,
-                        return_dict=True,
                         return_tensors="pt",
-                    ).to(model.device)
+                    )
+                    
+                    # Ensure inputs is a dict
+                    if not isinstance(inputs, dict):
+                        inputs = {"input_ids": inputs}
+                    
+                    # Move to device
+                    inputs = {k: v.to(model.device) if isinstance(v, torch.Tensor) else v 
+                             for k, v in inputs.items()}
                     
                     # Generate response
                     with torch.no_grad():
@@ -123,5 +136,5 @@ if prompt := st.chat_input("Type your message here..."):
 
 # Footer
 st.divider()
-st.caption("💡 Tip: This app uses the openai/gpt-oss-20b model locally. Make sure you have enough RAM/VRAM.")
+st.caption("💡 Tip: This app uses Qwen 2.5 (0.5B) - a lightweight model optimized for Streamlit Cloud.")
 
